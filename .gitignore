@@ -1,0 +1,5 @@
+*.class
+/bin/
+/data/*.txt
+.idea/
+*.iml
