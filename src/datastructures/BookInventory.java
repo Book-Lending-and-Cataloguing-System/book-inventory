@@ -2,6 +2,7 @@ package datastructures;
 
 import model.Book;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class BookInventory {
@@ -18,20 +19,26 @@ public class BookInventory {
      * @param book The book to add.
      */
     public void addBook(Book book) {
-        booksByCategory.computeIfAbsent(book.getCategory(), k -> new TreeMap<>()).put(book.getIsbn(), book);
+        booksByCategory
+            .computeIfAbsent(book.getCategory(), k -> new TreeMap<>())
+            .put(book.getIsbn(), book);
     }
 
     /**
-     * Removes a book by ISBN.
-     * Time complexity: O(log n) for finding category and ISBN.
+     * Removes a book by ISBN across all categories.
+     * Time complexity: O(log n) per category check.
      * @param isbn The ISBN of the book to remove.
      * @return true if the book was removed, false if not found.
      */
     public boolean removeBook(String isbn) {
-        // TODO: Implement removal logic
-        for (TreeMap<String, Book> books : booksByCategory.values()) {
+        for (Map.Entry<String, TreeMap<String, Book>> entry : booksByCategory.entrySet()) {
+            TreeMap<String, Book> books = entry.getValue();
             if (books.containsKey(isbn)) {
                 books.remove(isbn);
+                // Clean up empty categories
+                if (books.isEmpty()) {
+                    booksByCategory.remove(entry.getKey());
+                }
                 return true;
             }
         }
@@ -40,9 +47,8 @@ public class BookInventory {
 
     /**
      * Retrieves books in a specific category, sorted by ISBN.
-     * Time complexity: O(log n) for category lookup.
      * @param category The category to filter by.
-     * @return TreeMap of ISBN to Book for the category.
+     * @return TreeMap of ISBN to Book for the category, or empty if none found.
      */
     public TreeMap<String, Book> getBooksByCategory(String category) {
         return booksByCategory.getOrDefault(category, new TreeMap<>());
@@ -50,28 +56,73 @@ public class BookInventory {
 
     /**
      * Lists all books in the inventory, grouped by category.
-     * Time complexity: O(n) to traverse all books.
+     * Each category and its books are shown in sorted order.
      */
     public void listBooks() {
-        // TODO: Implement logic to print all books, grouped by category
+        System.out.println("\n--- Listing the books in the library ---");
+
+        if (booksByCategory.isEmpty()) {
+            System.out.println("The library inventory is currently empty.");
+            return;
+        }
+
+        for (Map.Entry<String, TreeMap<String, Book>> entry : booksByCategory.entrySet()) {
+            String category = entry.getKey();
+            TreeMap<String, Book> books = entry.getValue();
+
+            System.out.println("\nCategory: " + category);
+            for (Book book : books.values()) {
+                System.out.println(book);
+            }
+        }
     }
+
 
     /**
      * Filters books by a category prefix (e.g., "Fic" for Fiction).
-     * Time complexity: O(n) to scan categories.
+     * Efficiently uses subMap to get range of matching categories.
      * @param prefix The category prefix to match.
-     * @return TreeMap of matching books.
+     * @return TreeMap of matching categories and their books.
      */
     public TreeMap<String, Book> filterByCategoryPrefix(String prefix) {
-        // TODO: Implement prefix-based category filtering
-        return new TreeMap<>();
+        TreeMap<String, Book> result = new TreeMap<>();
+
+        if (prefix == null || prefix.isEmpty()) {
+            return result;
+        }
+
+        String upperBound = prefix + Character.MAX_VALUE;
+        NavigableMap<String, TreeMap<String, Book>> subCategories = booksByCategory.subMap(prefix, true, upperBound, true);
+
+        for (Map.Entry<String, TreeMap<String, Book>> entry : subCategories.entrySet()) {
+            result.putAll(entry.getValue());
+        }
+
+        return result;
     }
 
-    // TODO: Implement listBooks() to display all books, grouped by category
-    // TODO: Implement filterByCategoryPrefix() using TreeMap's subMap for range queries
-    // TODO: Add method to get books within a category range (e.g., categories "A" to "F")
-    // TODO: Document why TreeMap was chosen:
-    //       - Pros: O(log n) lookup/insertion, sorted order for categories and ISBNs, efficient range queries
-    //       - Cons: Slower than HashMap (O(1) lookup), higher memory overhead
-    // TODO: Add Big O/Omega analysis for addBook (O(log n)), removeBook (O(log n)), listBooks (O(n))
+    /**
+     * Gets all books in categories within a given alphabetical range.
+     * Useful for browsing or partial reports.
+     * @param fromCategory Start of the category range (inclusive).
+     * @param toCategory End of the category range (inclusive).
+     * @return Combined TreeMap of books in those categories.
+     */
+    public TreeMap<String, Book> getBooksInCategoryRange(String fromCategory, String toCategory) {
+        TreeMap<String, Book> result = new TreeMap<>();
+        NavigableMap<String, TreeMap<String, Book>> range = booksByCategory.subMap(fromCategory, true, toCategory, true);
+
+        for (TreeMap<String, Book> books : range.values()) {
+            result.putAll(books);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the total number of books in inventory.
+     */
+    public int totalBookCount() {
+        return booksByCategory.values().stream().mapToInt(Map::size).sum();
+    }
 }
