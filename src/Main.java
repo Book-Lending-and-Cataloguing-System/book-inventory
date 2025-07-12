@@ -3,6 +3,7 @@ import utils.*;
 import reports.*;
 import model.Book;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -15,8 +16,12 @@ public class Main {
         FileHandler fileHandler = new FileHandler();
         ReportGenerator reporter = new ReportGenerator();
 
-        // Book Inventory menu logic
         Scanner scanner = new Scanner(System.in);
+
+        // ✅ Load data from file before menu starts
+        inventory.loadBooks(fileHandler.loadBooks());
+        System.out.println("Books loaded from file.");
+
         boolean running = true;
 
         while (running) {
@@ -30,21 +35,23 @@ public class Main {
                 case "1":
                     bookInventoryMenu(scanner, inventory);
                     break;
+
                 case "0":
-                    // TODO: Save data to files on exit
+                    // ✅ Save data before exiting
+                    fileHandler.saveBooks(new ArrayList<>(inventory.getAllBooks()));
+                    System.out.println("Books saved to file. Goodbye!");
                     running = false;
                     break;
+
                 default:
                     System.out.println("Invalid input.");
             }
         }
 
-        // TODO: Load data from files at startup
-        // TODO: Save data to files on exit
         scanner.close();
     }
 
-    // Book Inventory submenu
+    // === Book Inventory Menu ===
     private static void bookInventoryMenu(Scanner scanner, BookInventory inventory) {
         boolean managing = true;
 
@@ -84,7 +91,7 @@ public class Main {
         }
     }
 
-    // Add book to inventory
+    // === Add Book ===
     private static void addBook(Scanner scanner, BookInventory inventory) {
         try {
             System.out.println("\n--- Add New Book ---");
@@ -106,7 +113,6 @@ public class Main {
             Book book = new Book(title, author, isbn, category, year, publisher, shelf);
             inventory.addBook(book);
             System.out.println("Book added successfully.");
-
         } catch (NumberFormatException e) {
             System.out.println("Invalid year. Please enter a number.");
         } catch (Exception e) {
@@ -114,7 +120,7 @@ public class Main {
         }
     }
 
-    // Remove book from inventory
+    // === Remove Book ===
     private static void removeBook(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter ISBN of book to remove: ");
         String isbn = scanner.nextLine().trim();
@@ -126,7 +132,7 @@ public class Main {
         }
     }
 
-    // List books by specific category
+    // === List by Category ===
     private static void listByCategory(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category: ");
         String category = scanner.nextLine().trim();
@@ -140,7 +146,7 @@ public class Main {
         }
     }
 
-    // Filter books by category prefix
+    // === Filter by Category Prefix ===
     private static void filterByPrefix(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category prefix: ");
         String prefix = scanner.nextLine().trim();
