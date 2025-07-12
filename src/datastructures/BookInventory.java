@@ -1,6 +1,9 @@
 package datastructures;
 
 import model.Book;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -125,4 +128,20 @@ public class BookInventory {
     public int totalBookCount() {
         return booksByCategory.values().stream().mapToInt(Map::size).sum();
     }
+
+    public void loadBooks(List<Book> books) {
+        for (Book book : books) {
+            addBook(book);
+        }
+    }
+
+    public List<Book> getAllBooks() {
+        List<Book> allBooks = new ArrayList<>();
+        for (TreeMap<String, Book> bookMap : booksByCategory.values()) {
+            allBooks.addAll(bookMap.values());
+        }
+        return allBooks;
+    }
+
+
 }

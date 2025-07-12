@@ -31,14 +31,46 @@ public class Book {
     public String getPublisher() { return publisher; }
     public String getShelfLocation() { return shelfLocation; }
 
+    // Save book as a file-friendly string
+    public String toFileString() {
+        return String.join("||",
+            title,
+            author,
+            isbn,
+            category,
+            String.valueOf(year),
+            publisher,
+            shelfLocation
+        );
+    }
+
+    // Recreate a Book from a file line
+    public static Book fromFileString(String line) {
+        String[] parts = line.split("\\|\\|");
+        if (parts.length != 7) {
+            throw new IllegalArgumentException("Invalid book data: " + line);
+        }
+
+        String title = parts[0];
+        String author = parts[1];
+        String isbn = parts[2];
+        String category = parts[3];
+        int year = Integer.parseInt(parts[4]);
+        String publisher = parts[5];
+        String shelf = parts[6];
+
+        return new Book(title, author, isbn, category, year, publisher, shelf);
+    }
+
+
     // toString for readable display
     @Override
-public String toString() {
-    return String.format(
-        "Title: %s\nAuthor: %s\nISBN: %s\nCategory: %s\nYear: %d\nPublisher: %s\nShelf Location: %s\n",
-        title, author, isbn, category, year, publisher, shelfLocation
-    );
-}
+    public String toString() {
+        return String.format(
+            "Title: %s\nAuthor: %s\nISBN: %s\nCategory: %s\nYear: %d\nPublisher: %s\nShelf Location: %s\n",
+            title, author, isbn, category, year, publisher, shelfLocation
+        );
+    }
 
 
     // equals based on ISBN
