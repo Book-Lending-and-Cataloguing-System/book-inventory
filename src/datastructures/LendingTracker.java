@@ -4,13 +4,10 @@ import model.Transaction;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * LendingTracker manages book borrowing and returns using a FIFO queue.
- * Transactions are logged and persisted in transactions.txt.
- */
 public class LendingTracker {
     private Queue<Transaction> transactions;
 
@@ -19,29 +16,28 @@ public class LendingTracker {
         loadTransactionsFromFile();
     }
 
-    /**
-     * Adds a borrow transaction to the queue.
-     * Queue is used to ensure borrowing is handled in order of request.
-     */
     public void addTransaction(Transaction transaction) {
         transactions.offer(transaction);
         saveTransactionToFile(transaction);
     }
 
-    /**
-     * Marks a book as returned.
-     * It updates the transaction with a return date and status.
-     * This mimics dequeuing and reprocessing the record.
-     */
-    public boolean returnBook(String isbn, String borrowerId, String returnDate) {
+    public boolean returnBook(String isbn, String borrowerId, String returnDateStr) {
         List<Transaction> tempList = new ArrayList<>();
         boolean updated = false;
+
+        // Convert String to LocalDate (because Transaction expects LocalDate)
+        LocalDate returnDate = LocalDate.parse(returnDateStr);
 
         while (!transactions.isEmpty()) {
             Transaction t = transactions.poll();
 
-            if (!updated && t.getIsbn().equals(isbn) && t.getBorrowerId().equals(borrowerId) && t.getStatus().equals("borrowed")) {
-                t.setReturnDate(returnDate);
+            // 🔥 Use the correct method name: getBookIsbn()
+            if (!updated &&
+                t.getBookIsbn().equals(isbn) &&
+                t.getBorrowerId().equals(borrowerId) &&
+                t.getStatus().equals("borrowed")) {
+
+                t.setReturnDate(returnDate); // ✅ Pass LocalDate, not String
                 t.setStatus("returned");
                 updated = true;
             }
@@ -50,13 +46,10 @@ public class LendingTracker {
         }
 
         transactions.addAll(tempList);
-        saveAllTransactions(); // rewrite entire file with updated data
+        saveAllTransactions();
         return updated;
     }
 
-    /**
-     * Displays all transactions in order.
-     */
     public void listTransactions() {
         if (transactions.isEmpty()) {
             System.out.println("No lending transactions recorded yet.");
@@ -69,16 +62,12 @@ public class LendingTracker {
         }
     }
 
-    /**
-     * Loads all previous transactions from transactions.txt into the queue.
-     */
     private void loadTransactionsFromFile() {
         File file = new File("data/transactions.txt");
         if (!file.exists()) return;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-
             while ((line = reader.readLine()) != null) {
                 Transaction t = Transaction.fromFileString(line);
                 transactions.offer(t);
@@ -88,9 +77,6 @@ public class LendingTracker {
         }
     }
 
-    /**
-     * Saves a single transaction to the file (append mode).
-     */
     private void saveTransactionToFile(Transaction t) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transactions.txt", true))) {
             writer.write(t.toFileString());
@@ -100,9 +86,6 @@ public class LendingTracker {
         }
     }
 
-    /**
-     * Rewrites the entire transactions.txt file (used after return).
-     */
     private void saveAllTransactions() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transactions.txt", false))) {
             for (Transaction t : transactions) {
@@ -113,5 +96,4 @@ public class LendingTracker {
             System.out.println("Failed to update transaction log: " + e.getMessage());
         }
     }
-
 }
