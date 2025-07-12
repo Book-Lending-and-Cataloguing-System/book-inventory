@@ -40,7 +40,7 @@ public String toString() {
     );
 }
 
-
+    
     // equals based on ISBN
     @Override
     public boolean equals(Object obj) {
@@ -55,4 +55,6 @@ public String toString() {
     public int hashCode() {
         return Objects.hash(isbn.toLowerCase());
     }
+
+    
 }
