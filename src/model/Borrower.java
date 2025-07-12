@@ -29,6 +29,59 @@ public class Borrower {
     public void removeBorrowedBook(String isbn) { borrowedBooks.remove(isbn); }
     public void addFine(double fine) { finesOwed += fine; }
 
+    public String toFileString() {
+        String books = String.join(";", borrowedBooks); // separate ISBNs with ;
+        return String.join("||",
+            name,
+            idNumber,
+            books,
+            String.valueOf(finesOwed),
+            contactInfo
+        );
+    }
+
+    public static Borrower fromFileString(String line) {
+        String[] parts = line.split("\\|\\|");
+        if (parts.length != 5) {
+            throw new IllegalArgumentException("Invalid borrower data: " + line);
+        }
+
+        Borrower borrower = new Borrower(parts[0], parts[1], parts[4]);
+        borrower.finesOwed = Double.parseDouble(parts[3]);
+
+        if (!parts[2].isEmpty()) {
+            String[] isbns = parts[2].split(";");
+            for (String isbn : isbns) {
+                borrower.addBorrowedBook(isbn);
+            }
+        }
+
+        return borrower;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Name: %s\nID: %s\nContact: %s\nBooks: %s\nFines: %.2f\n",
+            name, idNumber, contactInfo,
+            borrowedBooks.isEmpty() ? "None" : String.join(", ", borrowedBooks),
+            finesOwed
+        );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Borrower)) return false;
+        Borrower other = (Borrower) obj;
+        return idNumber.equalsIgnoreCase(other.idNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return idNumber.toLowerCase().hashCode();
+    }
+
     // TODO: Add toString() for readable output
     // TODO: Add equals() and hashCode() based on idNumber
 }
