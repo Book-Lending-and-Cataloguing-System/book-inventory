@@ -14,6 +14,11 @@ public class SearchUtil {
         return null;
     }
 
+    public List<Book> searchByAuthor(List<Book> allBooks, String query) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'searchByAuthor'");
+    }
+
     // TODO: Add search by author
     // TODO: Justify binary vs. linear search (Big O analysis)
 }

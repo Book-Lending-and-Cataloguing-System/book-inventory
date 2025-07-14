@@ -2,9 +2,19 @@
 
 A console-based Book Lending & Cataloguing System for Ebenezer Community Library, built for DCIT308 group project.
 
+## Features
+- Book inventory management
+- Borrower tracking
+- Lending/returning operations
+- Overdue monitoring
+- Reporting and analytics
+
+
 ## Setup
-1. Clone the repository: `git clone <repository-url>`
+1. Clone the repository: ```bash
+   git clone https://github.com/Book-Lending-and-Cataloguing-System/book-inventory.git
 2. Ensure Java JDK 17+ is installed.
+   java -version
 3. Compile and run: `javac src/*.java src/*/*.java && java src.Main`
 4. Data files are stored in `data/` (books.txt, borrowers.txt, transactions.txt).
 

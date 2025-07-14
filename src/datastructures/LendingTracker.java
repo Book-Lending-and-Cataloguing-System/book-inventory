@@ -96,4 +96,9 @@ public class LendingTracker {
             System.out.println("Failed to update transaction log: " + e.getMessage());
         }
     }
+
+    public void loadTransactions(List<Transaction> transactions2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'loadTransactions'");
+    }
 }

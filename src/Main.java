@@ -1,162 +1,180 @@
 import datastructures.*;
 import utils.*;
-import reports.*;
-import model.Book;
+import model.*;
+import reports.ReportGenerator;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.util.*;
 
 public class Main {
+    private static BookInventory inventory = new BookInventory();
+    private static BorrowerRegistry registry = new BorrowerRegistry();
+    private static LendingTracker tracker = new LendingTracker();
+    private static FileHandler fileHandler = new FileHandler();
+    private static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        BookInventory inventory = new BookInventory();
-        BorrowerRegistry registry = new BorrowerRegistry();
-        LendingTracker tracker = new LendingTracker();
-        OverdueMonitor monitor = new OverdueMonitor();
-        FileHandler fileHandler = new FileHandler();
-        ReportGenerator reporter = new ReportGenerator();
-
-        Scanner scanner = new Scanner(System.in);
-
-        // ✅ Load data from file before menu starts
-        inventory.loadBooks(fileHandler.loadBooks());
-        System.out.println("Books loaded from file.");
-
-        boolean running = true;
-
-        while (running) {
-            System.out.println("\n=== EBENEZER COMMUNITY LIBRARY ===");
-            System.out.println("1. Book Inventory");
-            System.out.println("0. Exit");
-            System.out.print("Select an option: ");
-            String input = scanner.nextLine().trim();
-
-            switch (input) {
-                case "1":
-                    bookInventoryMenu(scanner, inventory);
-                    break;
-
-                case "0":
-                    // ✅ Save data before exiting
-                    fileHandler.saveBooks(new ArrayList<>(inventory.getAllBooks()));
-                    System.out.println("Books saved to file. Goodbye!");
-                    running = false;
-                    break;
-
-                default:
-                    System.out.println("Invalid input.");
+        loadInitialData();
+        
+        while (true) {
+            printMainMenu();
+            int choice = getIntInput("Select: ", 0, 4);
+            
+            switch (choice) {
+                case 1 -> handleBookInventory();
+                case 2 -> handleBorrowerManagement();
+                case 3 -> handleLendingOperations();
+                case 4 -> generateReports();
+                case 0 -> { 
+                    saveAllData(); 
+                    System.exit(0); 
+                }
             }
         }
-
-        scanner.close();
     }
 
-    // === Book Inventory Menu ===
-    private static void bookInventoryMenu(Scanner scanner, BookInventory inventory) {
-        boolean managing = true;
+    private static Object generateReports() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateReports'");
+    }
 
-        while (managing) {
-            System.out.println("\n--- Book Inventory Menu ---");
+    private static Object handleLendingOperations() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLendingOperations'");
+    }
+
+    private static Object handleBorrowerManagement() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleBorrowerManagement'");
+    }
+
+    // === Initialization Methods ===
+    private static void loadInitialData() {
+        try {
+            inventory.loadBooks(fileHandler.loadBooks());
+            registry.loadBorrowers(fileHandler.loadBorrowers());
+            tracker.loadTransactions(fileHandler.loadTransactions());
+            System.out.println("System initialized successfully");
+        } catch (Exception e) {
+            System.out.println("Error loading data: " + e.getMessage());
+        }
+    }
+
+    private static void saveAllData() {
+        try {
+            fileHandler.saveBooks(inventory.getAllBooks());
+            fileHandler.saveBooks("data/borrowers.txt", registry.getAllBorrowers());
+            fileHandler.saveTransactions("data/transactions.txt", tracker.listTransactions());
+        } catch (Exception e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    // === Menu Methods ===
+    private static void printMainMenu() {
+        System.out.println("\n=== WELCOME TO EBENEZER COMMUNITY LIBRARY ===");
+        System.out.println("1. Book Inventory");
+        System.out.println("2. Borrower Management");
+        System.out.println("3. Lending Operations");
+        System.out.println("4. Reports");
+        System.out.println("0. Exit");
+    }
+
+    private static void handleBookInventory() {
+        while (true) {
+            System.out.println("\n--- BOOK INVENTORY ---");
             System.out.println("1. Add Book");
             System.out.println("2. Remove Book");
             System.out.println("3. List All Books");
-            System.out.println("4. List Books by Category");
-            System.out.println("5. Filter Categories by Prefix");
-            System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine().trim();
-
+            System.out.println("4. Search Books");
+            System.out.println("0. Back");
+            
+            int choice = getIntInput("Choose: ", 0, 4);
             switch (choice) {
-                case "1":
-                    addBook(scanner, inventory);
-                    break;
-                case "2":
-                    removeBook(scanner, inventory);
-                    break;
-                case "3":
-                    inventory.listBooks();
-                    break;
-                case "4":
-                    listByCategory(scanner, inventory);
-                    break;
-                case "5":
-                    filterByPrefix(scanner, inventory);
-                    break;
-                case "0":
-                    managing = false;
-                    break;
-                default:
-                    System.out.println("Invalid input.");
+                case 1 -> addBook();
+                case 2 -> removeBook();
+                case 3 -> inventory.listBooks();
+                case 4 -> searchBooks();
+                case 0 -> { return; }
             }
         }
     }
 
-    // === Add Book ===
-    private static void addBook(Scanner scanner, BookInventory inventory) {
+    private static Object removeBook() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeBook'");
+    }
+
+    // === Core Operations ===
+    private static void addBook() {
         try {
-            System.out.println("\n--- Add New Book ---");
-            System.out.print("Title: ");
-            String title = scanner.nextLine().trim();
-            System.out.print("Author: ");
-            String author = scanner.nextLine().trim();
-            System.out.print("ISBN: ");
-            String isbn = scanner.nextLine().trim();
-            System.out.print("Category: ");
-            String category = scanner.nextLine().trim();
-            System.out.print("Year: ");
-            int year = Integer.parseInt(scanner.nextLine().trim());
-            System.out.print("Publisher: ");
-            String publisher = scanner.nextLine().trim();
-            System.out.print("Shelf Location: ");
-            String shelf = scanner.nextLine().trim();
+            System.out.println("\n--- ADD BOOK ---");
+            String title = getNonEmptyInput("Title: ");
+            String author = getNonEmptyInput("Author: ");
+            String isbn = getNonEmptyInput("ISBN: ");
+            String category = getNonEmptyInput("Category: ");
+            int year = getIntInput("Year: ", 1800, LocalDate.now().getYear());
+            String publisher = getNonEmptyInput("Publisher: ");
+            String shelf = getNonEmptyInput("Shelf Location: ");
 
             Book book = new Book(title, author, isbn, category, year, publisher, shelf);
             inventory.addBook(book);
-            System.out.println("Book added successfully.");
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid year. Please enter a number.");
+            System.out.println("Book added successfully");
         } catch (Exception e) {
-            System.out.println("Error adding book: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    // === Remove Book ===
-    private static void removeBook(Scanner scanner, BookInventory inventory) {
-        System.out.print("Enter ISBN of book to remove: ");
-        String isbn = scanner.nextLine().trim();
-        boolean removed = inventory.removeBook(isbn);
-        if (removed) {
-            System.out.println("Book removed.");
-        } else {
-            System.out.println("Book not found.");
+    private static void searchBooks() {
+        System.out.println("\nSearch by:");
+        System.out.println("1. Title (Binary Search)");
+        System.out.println("2. ISBN (Linear Search)");
+        System.out.println("3. Author");
+        int choice = getIntInput("Choose: ", 1, 3);
+        
+        String query = getNonEmptyInput("Enter search term: ");
+        SearchUtil searchUtil = new SearchUtil();
+        List<Book> results = new ArrayList<>();
+        
+        switch (choice) {
+            case 1 -> results.add(searchUtil.binarySearchByTitle(inventory.getAllBooks(), query));
+            case 2 -> results.add(searchUtil.linearSearchByIsbn(inventory.getAllBooks(), query));
+            case 3 -> results = searchUtil.searchByAuthor(inventory.getAllBooks(), query);
         }
+        
+        displaySearchResults(results);
     }
 
-    // === List by Category ===
-    private static void listByCategory(Scanner scanner, BookInventory inventory) {
-        System.out.print("Enter category: ");
-        String category = scanner.nextLine().trim();
-        TreeMap<String, Book> books = inventory.getBooksByCategory(category);
-        if (books.isEmpty()) {
-            System.out.println("No books found in this category.");
-        } else {
-            for (Book book : books.values()) {
-                System.out.println(book);
+    // === Utility Methods ===
+    private static int getIntInput(String prompt, int min, int max) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                int input = Integer.parseInt(scanner.nextLine());
+                if (input >= min && input <= max) return input;
+                System.out.printf("Please enter between %d-%d\n", min, max);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format");
             }
         }
     }
 
-    // === Filter by Category Prefix ===
-    private static void filterByPrefix(Scanner scanner, BookInventory inventory) {
-        System.out.print("Enter category prefix: ");
-        String prefix = scanner.nextLine().trim();
-        TreeMap<String, Book> filtered = inventory.filterByCategoryPrefix(prefix);
-        if (filtered.isEmpty()) {
-            System.out.println("No matching categories.");
-        } else {
-            for (Book book : filtered.values()) {
-                System.out.println(book);
-            }
+    private static String getNonEmptyInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) return input;
+            System.out.println("This field cannot be empty");
         }
+    }
+
+    private static void displaySearchResults(List<Book> results) {
+        results.removeIf(Objects::isNull);
+        if (results.isEmpty()) {
+            System.out.println("No books found");
+            return;
+        }
+        System.out.println("\nSearch Results:");
+        results.forEach(System.out::println);
     }
 }

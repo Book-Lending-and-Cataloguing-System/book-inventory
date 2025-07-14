@@ -23,7 +23,7 @@ public class BookInventory {
      */
     public void addBook(Book book) {
         booksByCategory
-            .computeIfAbsent(book.getCategory(), k -> new TreeMap<>())
+            .computeIfAbsent(book.getCategory(), _ -> new TreeMap<>())
             .put(book.getIsbn(), book);
     }
 
