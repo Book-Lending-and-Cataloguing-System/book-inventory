@@ -1,147 +1,74 @@
 package datastructures;
 
-import model.Book;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
 import java.util.TreeMap;
+import model.Book;
 
 public class BookInventory {
-    // TreeMap for sorted order by category, with nested TreeMap for sorted ISBNs
-    private TreeMap<String, TreeMap<String, Book>> booksByCategory;
+    private final TreeMap<String, List<Book>> booksByCategory;
 
     public BookInventory() {
-        booksByCategory = new TreeMap<>();
+        booksByCategory = new TreeMap<>(); // Automatically sorts by category name
+    }
+public List<String> getAllCategories() {
+    return new ArrayList<>(booksByCategory.keySet());
+}
+
+    // Method to add a book to a specific category
+    public void addBook(String category, Book book) {
+        booksByCategory.computeIfAbsent(category, k -> new ArrayList<>()).add(book);
     }
 
-    /**
-     * Adds a book to the inventory, organized by category.
-     * Time complexity: O(log n) due to TreeMap insertion.
-     * @param book The book to add.
-     */
-    public void addBook(Book book) {
-        booksByCategory
-            .computeIfAbsent(book.getCategory(), k -> new TreeMap<>())
-            .put(book.getIsbn(), book);
-    }
-
-    /**
-     * Removes a book by ISBN across all categories.
-     * Time complexity: O(log n) per category check.
-     * @param isbn The ISBN of the book to remove.
-     * @return true if the book was removed, false if not found.
-     */
-    public boolean removeBook(String isbn) {
-        for (Map.Entry<String, TreeMap<String, Book>> entry : booksByCategory.entrySet()) {
-            TreeMap<String, Book> books = entry.getValue();
-            if (books.containsKey(isbn)) {
-                books.remove(isbn);
-                // Clean up empty categories
-                if (books.isEmpty()) {
-                    booksByCategory.remove(entry.getKey());
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves books in a specific category, sorted by ISBN.
-     * @param category The category to filter by.
-     * @return TreeMap of ISBN to Book for the category, or empty if none found.
-     */
-    public TreeMap<String, Book> getBooksByCategory(String category) {
-        return booksByCategory.getOrDefault(category, new TreeMap<>());
-    }
-
-    /**
-     * Lists all books in the inventory, grouped by category.
-     * Each category and its books are shown in sorted order.
-     */
-    public void listBooks() {
-        System.out.println("\n--- Listing the books in the library ---");
-
-        if (booksByCategory.isEmpty()) {
-            System.out.println("The library inventory is currently empty.");
-            return;
-        }
-
-        for (Map.Entry<String, TreeMap<String, Book>> entry : booksByCategory.entrySet()) {
-            String category = entry.getKey();
-            TreeMap<String, Book> books = entry.getValue();
-
-            System.out.println("\nCategory: " + category);
-            for (Book book : books.values()) {
-                System.out.println(book);
-            }
-        }
-    }
-
-
-    /**
-     * Filters books by a category prefix (e.g., "Fic" for Fiction).
-     * Efficiently uses subMap to get range of matching categories.
-     * @param prefix The category prefix to match.
-     * @return TreeMap of matching categories and their books.
-     */
-    public TreeMap<String, Book> filterByCategoryPrefix(String prefix) {
-        TreeMap<String, Book> result = new TreeMap<>();
-
-        if (prefix == null || prefix.isEmpty()) {
-            return result;
-        }
-
-        String upperBound = prefix + Character.MAX_VALUE;
-        NavigableMap<String, TreeMap<String, Book>> subCategories = booksByCategory.subMap(prefix, true, upperBound, true);
-
-        for (Map.Entry<String, TreeMap<String, Book>> entry : subCategories.entrySet()) {
-            result.putAll(entry.getValue());
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets all books in categories within a given alphabetical range.
-     * Useful for browsing or partial reports.
-     * @param fromCategory Start of the category range (inclusive).
-     * @param toCategory End of the category range (inclusive).
-     * @return Combined TreeMap of books in those categories.
-     */
-    public TreeMap<String, Book> getBooksInCategoryRange(String fromCategory, String toCategory) {
-        TreeMap<String, Book> result = new TreeMap<>();
-        NavigableMap<String, TreeMap<String, Book>> range = booksByCategory.subMap(fromCategory, true, toCategory, true);
-
-        for (TreeMap<String, Book> books : range.values()) {
-            result.putAll(books);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the total number of books in inventory.
-     */
-    public int totalBookCount() {
-        return booksByCategory.values().stream().mapToInt(Map::size).sum();
-    }
-
+    // Method to load a list of books into the inventory
     public void loadBooks(List<Book> books) {
         for (Book book : books) {
-            addBook(book);
+            addBook(book.getCategory(), book);
         }
     }
 
+    // Method to get all books across all categories
     public List<Book> getAllBooks() {
         List<Book> allBooks = new ArrayList<>();
-        for (TreeMap<String, Book> bookMap : booksByCategory.values()) {
-            allBooks.addAll(bookMap.values());
-        }
+        booksByCategory.values().forEach(allBooks::addAll);
         return allBooks;
     }
 
+    // Method to list all books (could be an alias for getAllBooks)
+    public void listBooks() {
+        for (List<Book> books : booksByCategory.values()) {
+            for (Book book : books) {
+                System.out.println(book.getTitle() + " by " + book.getAuthor());
+            }
+        }
+    }
 
+    // Method to remove a book by ISBN (or any unique identifier)
+    public boolean removeBook(String isbn) {
+        for (List<Book> books : booksByCategory.values()) {
+            for (Book book : books) {
+                if (book.getIsbn().equals(isbn)) {
+                    books.remove(book);
+                    return true; // Book removed
+                }
+            }
+        }
+        return false; // Book not found
+    }
+
+    // Method to get books by specific category
+    public List<Book> getBooksByCategory(String category) {
+        return booksByCategory.getOrDefault(category, new ArrayList<>());
+    }
+
+    // Method to filter books by category prefix
+    public List<Book> filterByCategoryPrefix(String prefix) {
+        List<Book> filteredBooks = new ArrayList<>();
+        for (String category : booksByCategory.keySet()) {
+            if (category.startsWith(prefix)) {
+                filteredBooks.addAll(booksByCategory.get(category));
+            }
+        }
+        return filteredBooks;
+    }
 }

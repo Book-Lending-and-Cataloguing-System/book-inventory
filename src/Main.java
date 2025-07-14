@@ -1,5 +1,10 @@
-import datastructures.*;
+import datastructures.BookInventory;
+import datastructures.BorrowerRegistry;
+import datastructures.LendingTracker;
+import datastructures.OverdueMonitor;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.TreeMap;
 import model.Book;
@@ -7,21 +12,36 @@ import reports.ReportGenerator;
 import utils.*;
 
 public class Main {
-    private static final BookInventory BookInventory = null;
-
     public static void main(String[] args) {
         BookInventory inventory = new BookInventory();
+
+        String category = "Fantasy";
+// Call the method with the category argument
+        // Replace with the actual category you want to query
+
+        // Create a list of books to load
+        List<Book> booksToLoad = Arrays.asList(
+            new Book("The Hobbit", "J.R.R. Tolkien", "12345", "Fantasy", 1937, "George Allen & Unwin", "Shelf A1"),
+            new Book("1984", "George Orwell", "67890", "Dystopian", 1949, "Secker & Warburg", "Shelf B2"),
+            new Book("The Great Gatsby", "F. Scott Fitzgerald", "54321", "Classic", 1925, "Charles Scribner's Sons", "Shelf C3")
+        );
+inventory.loadBooks(booksToLoad);
+
+inventory.listBooks();
+
+ boolean removed = inventory.removeBook("12345");
+        System.out.println("Book removed: " + removed);
+
+        
+
         BorrowerRegistry BorrowerRegistry = new BorrowerRegistry();
         LendingTracker LendingTracker = new LendingTracker();
         OverdueMonitor monitor = new OverdueMonitor();
         FileHandler fileHandler = new FileHandler();
        
          // Initialize your data here...
-         ReportGenerator reportGenerator = new ReportGenerator(BookInventory, BorrowerRegistry, LendingTracker);
-
-         // Generate reports
-        reportGenerator.generateMostBorrowedBooksReport();
-        reportGenerator.generateFinesReport();
+         // Create a report generator
+        ReportGenerator reportGenerator = new ReportGenerator(inventory);
         reportGenerator.generateInventoryDistributionReport();
 
 
@@ -120,7 +140,7 @@ public class Main {
             String shelf = scanner.nextLine().trim();
 
             Book book = new Book(title, author, isbn, category, year, publisher, shelf);
-            inventory.addBook(book);
+            inventory.addBook("Fantasy", new Book("The Hobbit", "J.R.R. Tolkien", "12345", "Fantasy", 1937, "George Allen & Unwin", "Shelf A1"));
             System.out.println("Book added successfully.");
         } catch (NumberFormatException e) {
             System.out.println("Invalid year. Please enter a number.");
@@ -145,7 +165,7 @@ public class Main {
     private static void listByCategory(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category: ");
         String category = scanner.nextLine().trim();
-        TreeMap<String, Book> books = inventory.getBooksByCategory(category);
+        TreeMap<String, Book> books = (TreeMap<String, Book>) inventory.getBooksByCategory(category);
         if (books.isEmpty()) {
             System.out.println("No books found in this category.");
         } else {
@@ -159,7 +179,7 @@ public class Main {
     private static void filterByPrefix(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category prefix: ");
         String prefix = scanner.nextLine().trim();
-        TreeMap<String, Book> filtered = inventory.filterByCategoryPrefix(prefix);
+        TreeMap<String, Book> filtered = (TreeMap<String, Book>) inventory.filterByCategoryPrefix(prefix);
         if (filtered.isEmpty()) {
             System.out.println("No matching categories.");
         } else {

@@ -27,7 +27,7 @@ public class Borrower {
     public String getContactInfo() { return contactInfo; }
     public void addBorrowedBook(String isbn) { borrowedBooks.add(isbn); }
     public void removeBorrowedBook(String isbn) { borrowedBooks.remove(isbn); }
-    public void addFine(double fine) { finesOwed += fine; }
+
 
     public String toFileString() {
         String books = String.join(";", borrowedBooks); // separate ISBNs with ;
@@ -69,6 +69,12 @@ public class Borrower {
         );
     }
 
+    public void addFine(double amount) {
+        finesOwed += amount; // Method to add fines
+    }
+    public void payFine(double amount) {
+        finesOwed -= amount; // Method to pay fines
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

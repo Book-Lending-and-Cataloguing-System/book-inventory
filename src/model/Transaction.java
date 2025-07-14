@@ -17,12 +17,20 @@ public class Transaction {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Constructor
-    public Transaction(String bookIsbn, String borrowerId, LocalDate borrowDate, LocalDate returnDate, String status) {
+    public Transaction(String bookIsbn, String borrowerId, LocalDate borrowDate, String status) {
         this.bookIsbn = bookIsbn;
         this.borrowerId = borrowerId;
         this.borrowDate = borrowDate;
         this.returnDate = returnDate;
         this.status = status;
+    }
+
+    public Transaction(String bookISBN, String borrowerID, LocalDate now, String borrowed) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getBookISBN() {
+        return bookIsbn;
     }
 
     // Minimal constructor for borrowing
@@ -91,6 +99,6 @@ public class Transaction {
         LocalDate borrow = LocalDate.parse(parts[2], formatter);
         LocalDate ret = parts[3].equals("null") ? null : LocalDate.parse(parts[3], formatter);
         String status = parts[4];
-        return new Transaction(isbn, borrower, borrow, ret, status);
+        return new Transaction(isbn, borrower, borrow, status);
     }
 }

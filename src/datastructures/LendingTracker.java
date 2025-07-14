@@ -1,12 +1,12 @@
 package datastructures;
 
-import model.Transaction;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import model.Transaction;
 
 public class LendingTracker {
     private Queue<Transaction> transactions;
@@ -16,6 +16,16 @@ public class LendingTracker {
         loadTransactionsFromFile();
     }
 
+    public void borrowBook(String bookISBN, String borrowerID) {
+        // Create a new transaction for borrowing a book
+        Transaction transaction = new Transaction(bookISBN, borrowerID, LocalDate.now(), "borrowed");
+        transactions.add(transaction); // Add the transaction to the queue
+    }
+
+    public List<Transaction> getTransactions() {
+        return new LinkedList<>(transactions);
+    }
+    
     public void addTransaction(Transaction transaction) {
         transactions.offer(transaction);
         saveTransactionToFile(transaction);

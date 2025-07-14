@@ -19,15 +19,14 @@ public class BorrowerRegistry {
      * @throws IllegalArgumentException if borrower is null or ID already exists
      */
     public void addBorrower(Borrower borrower) {
-        if (borrower == null) {
-            throw new IllegalArgumentException("Borrower cannot be null");
-        }
-        if (borrowers.containsKey(borrower.getIdNumber())) {
-            throw new IllegalArgumentException("Borrower with ID " + borrower.getIdNumber() + " already exists");
-        }
-        borrowers.put(borrower.getIdNumber(), borrower);
+        borrowers.put(borrower.getId(), borrower);
     }
-
+public Borrower getBorrower(String borrowerId) {
+        return borrowers.get(borrowerId); // Return the borrower with the given ID
+}
+public Map<String, Borrower> getBorrowers() {
+        return borrowers; 
+}
     /**
      * Removes a borrower from the registry
      * @param idNumber The ID of the borrower to remove
