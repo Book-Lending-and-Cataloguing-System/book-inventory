@@ -1,20 +1,29 @@
 import datastructures.*;
-import utils.*;
-import reports.*;
-import model.Book;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.TreeMap;
+import model.Book;
+import reports.ReportGenerator;
+import utils.*;
 
 public class Main {
+    private static final BookInventory BookInventory = null;
+
     public static void main(String[] args) {
         BookInventory inventory = new BookInventory();
-        BorrowerRegistry registry = new BorrowerRegistry();
-        LendingTracker tracker = new LendingTracker();
+        BorrowerRegistry BorrowerRegistry = new BorrowerRegistry();
+        LendingTracker LendingTracker = new LendingTracker();
         OverdueMonitor monitor = new OverdueMonitor();
         FileHandler fileHandler = new FileHandler();
-        ReportGenerator reporter = new ReportGenerator();
+       
+         // Initialize your data here...
+         ReportGenerator reportGenerator = new ReportGenerator(BookInventory, BorrowerRegistry, LendingTracker);
+
+         // Generate reports
+        reportGenerator.generateMostBorrowedBooksReport();
+        reportGenerator.generateFinesReport();
+        reportGenerator.generateInventoryDistributionReport();
+
 
         Scanner scanner = new Scanner(System.in);
 
