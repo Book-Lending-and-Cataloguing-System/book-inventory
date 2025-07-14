@@ -2,6 +2,11 @@ package model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a lending transaction in the library system.
@@ -93,4 +98,35 @@ public class Transaction {
         String status = parts[4];
         return new Transaction(isbn, borrower, borrow, ret, status);
     }
+    public Map<String, Integer> mostBorrowedBooksLast30Days(List<Transaction> transactions) {
+    Map<String, Integer> countMap = new HashMap<>();
+    LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+
+    for (Transaction txn : transactions) {
+        if (txn.getBorrowDate().isAfter(thirtyDaysAgo)) {
+            countMap.put(txn.getBookIsbn(), countMap.getOrDefault(txn.getBookIsbn(), 0) + 1);
+        }
+    }
+
+    return countMap.entrySet().stream()
+        .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+        .limit(5) // Top 5
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            (e1, e2) -> e1,
+            LinkedHashMap::new
+        ));
+}
+public List<Borrower> topBorrowersByFines(List<Borrower> borrowers) {
+    return borrowers.stream()
+        .sorted((b1, b2) -> Double.compare(b2.getFinesOwed(), b1.getFinesOwed()))
+        .limit(5)
+        .collect(Collectors.toList());
+}
+public Map<String, Long> inventoryByCategory(List<Book> books) {
+    return books.stream()
+        .collect(Collectors.groupingBy(Book::getCategory, Collectors.counting()));
+}
+
 }

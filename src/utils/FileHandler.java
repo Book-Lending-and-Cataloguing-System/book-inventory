@@ -1,12 +1,10 @@
 package utils;
 
+import java.io.*;
+import java.util.*;
 import model.Book;
 import model.Borrower;
 import model.Transaction;
-
-import java.io.*;
-import java.util.*;
-import java.time.LocalDate;
 
 public class FileHandler {
     private static final String BOOKS_FILE = "data/books.txt";
@@ -108,4 +106,10 @@ public class FileHandler {
         }
         return transactions;
     }
+    FileHandler fileHandler = new FileHandler();
+
+List<Book> books = fileHandler.loadBooks();
+List<Borrower> borrowers = fileHandler.loadBorrowers();
+List<Transaction> transactions = fileHandler.loadTransactions();
+
 }
