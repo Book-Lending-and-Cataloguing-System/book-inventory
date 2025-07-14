@@ -156,6 +156,16 @@ public class Main {
         } else {
             for (Book book : filtered.values()) {
                 System.out.println(book);
+
+                System.out.println("Top Borrowed Books:");
+reports.mostBorrowedBooksLast30Days(Transaction).forEach((isbn, count) -> System.out.println(isbn + ": " + count));
+
+System.out.println("\n Top Borrowers by Fine:");
+reports.topBorrowersByFines(Borrower).forEach(System.out::println);
+
+System.out.println("\n Inventory by Category:");
+reports.inventoryByCategory(books).forEach((category, count) -> System.out.println(category + ": " + count));
+
             }
         }
     }

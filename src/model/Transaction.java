@@ -118,4 +118,15 @@ public class Transaction {
             LinkedHashMap::new
         ));
 }
+public List<Borrower> topBorrowersByFines(List<Borrower> borrowers) {
+    return borrowers.stream()
+        .sorted((b1, b2) -> Double.compare(b2.getFinesOwed(), b1.getFinesOwed()))
+        .limit(5)
+        .collect(Collectors.toList());
+}
+public Map<String, Long> inventoryByCategory(List<Book> books) {
+    return books.stream()
+        .collect(Collectors.groupingBy(Book::getCategory, Collectors.counting()));
+}
+
 }
