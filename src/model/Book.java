@@ -62,7 +62,6 @@ public class Book {
         return new Book(title, author, isbn, category, year, publisher, shelf);
     }
 
-
     // toString for readable display
     @Override
     public String toString() {
@@ -72,7 +71,6 @@ public class Book {
         );
     }
 
-    
     // equals based on ISBN
     @Override
     public boolean equals(Object obj) {
@@ -87,6 +85,4 @@ public class Book {
     public int hashCode() {
         return Objects.hash(isbn.toLowerCase());
     }
-
-    
 }

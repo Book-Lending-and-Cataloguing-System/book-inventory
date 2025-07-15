@@ -2,8 +2,9 @@ import datastructures.*;
 import utils.*;
 import reports.*;
 import model.Book;
-
+import model.Borrower;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -27,6 +28,7 @@ public class Main {
         while (running) {
             System.out.println("\n=== EBENEZER COMMUNITY LIBRARY ===");
             System.out.println("1. Book Inventory");
+            System.out.println("2. Borrower Registry");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
             String input = scanner.nextLine().trim();
@@ -35,14 +37,14 @@ public class Main {
                 case "1":
                     bookInventoryMenu(scanner, inventory);
                     break;
-
+                case "2":
+                    borrowerRegistryMenu(scanner, registry);
+                    break;
                 case "0":
-                    // ✅ Save data before exiting
                     fileHandler.saveBooks(new ArrayList<>(inventory.getAllBooks()));
                     System.out.println("Books saved to file. Goodbye!");
                     running = false;
                     break;
-
                 default:
                     System.out.println("Invalid input.");
             }
@@ -51,7 +53,8 @@ public class Main {
         scanner.close();
     }
 
-    // === Book Inventory Menu ===
+    // === Book Inventory Menu and Helpers ===
+
     private static void bookInventoryMenu(Scanner scanner, BookInventory inventory) {
         boolean managing = true;
 
@@ -91,7 +94,6 @@ public class Main {
         }
     }
 
-    // === Add Book ===
     private static void addBook(Scanner scanner, BookInventory inventory) {
         try {
             System.out.println("\n--- Add New Book ---");
@@ -120,7 +122,6 @@ public class Main {
         }
     }
 
-    // === Remove Book ===
     private static void removeBook(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter ISBN of book to remove: ");
         String isbn = scanner.nextLine().trim();
@@ -132,7 +133,6 @@ public class Main {
         }
     }
 
-    // === List by Category ===
     private static void listByCategory(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category: ");
         String category = scanner.nextLine().trim();
@@ -146,7 +146,6 @@ public class Main {
         }
     }
 
-    // === Filter by Category Prefix ===
     private static void filterByPrefix(Scanner scanner, BookInventory inventory) {
         System.out.print("Enter category prefix: ");
         String prefix = scanner.nextLine().trim();
@@ -156,6 +155,114 @@ public class Main {
         } else {
             for (Book book : filtered.values()) {
                 System.out.println(book);
+            }
+        }
+    }
+
+    // === Borrower Registry Menu and Helpers ===
+
+    private static void borrowerRegistryMenu(Scanner scanner, BorrowerRegistry registry) {
+        boolean managing = true;
+
+        while (managing) {
+            System.out.println("\n--- Borrower Registry Menu ---");
+            System.out.println("1. Add Borrower");
+            System.out.println("2. Remove Borrower");
+            System.out.println("3. Search Borrower by ID (direct)");
+            System.out.println("4. Search Borrower by ID (recursive)");
+            System.out.println("5. List All Borrowers");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    addBorrower(scanner, registry);
+                    break;
+                case "2":
+                    removeBorrower(scanner, registry);
+                    break;
+                case "3":
+                    searchBorrowerDirect(scanner, registry);
+                    break;
+                case "4":
+                    searchBorrowerRecursive(scanner, registry);
+                    break;
+                case "5":
+                    listAllBorrowers(registry);
+                    break;
+                case "0":
+                    managing = false;
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+            }
+        }
+    }
+
+    private static void addBorrower(Scanner scanner, BorrowerRegistry registry) {
+        try {
+            System.out.println("\n--- Add New Borrower ---");
+            System.out.print("Name: ");
+            String name = scanner.nextLine().trim();
+            System.out.print("ID Number: ");
+            String id = scanner.nextLine().trim();
+            System.out.print("Contact Info: ");
+            String contact = scanner.nextLine().trim();
+
+            Borrower borrower = new Borrower(name, id, contact);
+            registry.addBorrower(borrower);
+            System.out.println("Borrower added successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void removeBorrower(Scanner scanner, BorrowerRegistry registry) {
+        System.out.print("Enter ID of borrower to remove: ");
+        String id = scanner.nextLine().trim();
+        try {
+            boolean removed = registry.removeBorrower(id);
+            if (removed) {
+                System.out.println("Borrower removed successfully.");
+            } else {
+                System.out.println("Borrower not found.");
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Cannot remove borrower: " + e.getMessage());
+        }
+    }
+
+    private static void searchBorrowerDirect(Scanner scanner, BorrowerRegistry registry) {
+        System.out.print("Enter ID to search: ");
+        String id = scanner.nextLine().trim();
+        Borrower b = registry.findBorrower(id);
+        if (b != null) {
+            System.out.println("Borrower found: " + b);
+        } else {
+            System.out.println("Borrower not found.");
+        }
+    }
+
+    private static void searchBorrowerRecursive(Scanner scanner, BorrowerRegistry registry) {
+        System.out.print("Enter ID to search: ");
+        String id = scanner.nextLine().trim();
+        Borrower b = registry.findBorrowerRecursive(id);
+        if (b != null) {
+            System.out.println("Borrower found (recursive): " + b);
+        } else {
+            System.out.println("Borrower not found.");
+        }
+    }
+
+    private static void listAllBorrowers(BorrowerRegistry registry) {
+        System.out.println("\n--- All Borrowers ---");
+        List<Borrower> borrowers = registry.getAllBorrowers();
+        if (borrowers.isEmpty()) {
+            System.out.println("No borrowers registered.");
+        } else {
+            for (Borrower b : borrowers) {
+                System.out.println(b);
             }
         }
     }
