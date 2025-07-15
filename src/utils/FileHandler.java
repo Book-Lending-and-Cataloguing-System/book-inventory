@@ -106,10 +106,4 @@ public class FileHandler {
         }
         return transactions;
     }
-    FileHandler fileHandler = new FileHandler();
-
-List<Book> books = fileHandler.loadBooks();
-List<Borrower> borrowers = fileHandler.loadBorrowers();
-List<Transaction> transactions = fileHandler.loadTransactions();
-
 }

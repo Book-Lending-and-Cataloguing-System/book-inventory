@@ -62,7 +62,6 @@ public class Book {
         return new Book(title, author, isbn, category, year, publisher, shelf);
     }
 
-
     // toString for readable display
     @Override
     public String toString() {
@@ -71,7 +70,6 @@ public class Book {
             title, author, isbn, category, year, publisher, shelfLocation
         );
     }
-
 
     // equals based on ISBN
     @Override

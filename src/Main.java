@@ -3,7 +3,6 @@ import utils.*;
 import reports.*;
 import model.Book;
 import model.Borrower;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -54,7 +53,8 @@ public class Main {
         scanner.close();
     }
 
-    // === Book Inventory Menu ===
+    // === Book Inventory Menu and Helpers ===
+
     private static void bookInventoryMenu(Scanner scanner, BookInventory inventory) {
         boolean managing = true;
 
@@ -94,47 +94,6 @@ public class Main {
         }
     }
 
-    // === Borrower Registry Menu ===
-    private static void borrowerRegistryMenu(Scanner scanner, BorrowerRegistry registry) {
-        boolean managing = true;
-
-        while (managing) {
-            System.out.println("\n--- Borrower Registry Menu ---");
-            System.out.println("1. Add Borrower");
-            System.out.println("2. Remove Borrower");
-            System.out.println("3. Search Borrower by ID (direct)");
-            System.out.println("4. Search Borrower by ID (recursive)");
-            System.out.println("5. List All Borrowers");
-            System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine().trim();
-
-            switch (choice) {
-                case "1":
-                    addBorrower(scanner, registry);
-                    break;
-                case "2":
-                    removeBorrower(scanner, registry);
-                    break;
-                case "3":
-                    searchBorrowerDirect(scanner, registry);
-                    break;
-                case "4":
-                    searchBorrowerRecursive(scanner, registry);
-                    break;
-                case "5":
-                    listAllBorrowers(registry);
-                    break;
-                case "0":
-                    managing = false;
-                    break;
-                default:
-                    System.out.println("Invalid input.");
-            }
-        }
-    }
-
-    // === Book Inventory helpers ===
     private static void addBook(Scanner scanner, BookInventory inventory) {
         try {
             System.out.println("\n--- Add New Book ---");
@@ -196,21 +155,51 @@ public class Main {
         } else {
             for (Book book : filtered.values()) {
                 System.out.println(book);
-
-                System.out.println("Top Borrowed Books:");
-reports.mostBorrowedBooksLast30Days(Transaction).forEach((isbn, count) -> System.out.println(isbn + ": " + count));
-
-System.out.println("\n Top Borrowers by Fine:");
-reports.topBorrowersByFines(Borrower).forEach(System.out::println);
-
-System.out.println("\n Inventory by Category:");
-reports.inventoryByCategory(books).forEach((category, count) -> System.out.println(category + ": " + count));
-
             }
         }
     }
 
-    // === Borrower Registry helpers ===
+    // === Borrower Registry Menu and Helpers ===
+
+    private static void borrowerRegistryMenu(Scanner scanner, BorrowerRegistry registry) {
+        boolean managing = true;
+
+        while (managing) {
+            System.out.println("\n--- Borrower Registry Menu ---");
+            System.out.println("1. Add Borrower");
+            System.out.println("2. Remove Borrower");
+            System.out.println("3. Search Borrower by ID (direct)");
+            System.out.println("4. Search Borrower by ID (recursive)");
+            System.out.println("5. List All Borrowers");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    addBorrower(scanner, registry);
+                    break;
+                case "2":
+                    removeBorrower(scanner, registry);
+                    break;
+                case "3":
+                    searchBorrowerDirect(scanner, registry);
+                    break;
+                case "4":
+                    searchBorrowerRecursive(scanner, registry);
+                    break;
+                case "5":
+                    listAllBorrowers(registry);
+                    break;
+                case "0":
+                    managing = false;
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+            }
+        }
+    }
+
     private static void addBorrower(Scanner scanner, BorrowerRegistry registry) {
         try {
             System.out.println("\n--- Add New Borrower ---");
