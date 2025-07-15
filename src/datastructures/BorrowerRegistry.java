@@ -134,4 +134,10 @@ public class BorrowerRegistry {
                 "(like for the recursive search implementation). HashMap is more memory efficient " +
                 "for our primary use cases.";
     }
+    public void loadBorrowers(List<Borrower> borrowerList) {
+        for (Borrower borrower : borrowerList) {
+            borrowers.put(borrower.getIdNumber(), borrower);
+        }
+    }
+
 }

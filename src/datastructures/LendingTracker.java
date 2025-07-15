@@ -25,19 +25,17 @@ public class LendingTracker {
         List<Transaction> tempList = new ArrayList<>();
         boolean updated = false;
 
-        // Convert String to LocalDate (because Transaction expects LocalDate)
         LocalDate returnDate = LocalDate.parse(returnDateStr);
 
         while (!transactions.isEmpty()) {
             Transaction t = transactions.poll();
 
-            // 🔥 Use the correct method name: getBookIsbn()
             if (!updated &&
                 t.getBookIsbn().equals(isbn) &&
                 t.getBorrowerId().equals(borrowerId) &&
                 t.getStatus().equals("borrowed")) {
 
-                t.setReturnDate(returnDate); // ✅ Pass LocalDate, not String
+                t.setReturnDate(returnDate);
                 t.setStatus("returned");
                 updated = true;
             }
@@ -96,4 +94,14 @@ public class LendingTracker {
             System.out.println("Failed to update transaction log: " + e.getMessage());
         }
     }
+
+    // ✅ This is the method Main.java needs
+    public List<Transaction> getAllTransactions() {
+        return new ArrayList<>(transactions);
+    }
+    public void loadTransactions(List<Transaction> transactionList) {
+        transactions.clear();
+        transactions.addAll(transactionList);
+    }
+
 }

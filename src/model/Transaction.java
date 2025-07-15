@@ -39,6 +39,14 @@ public class Transaction {
         this.status = "borrowed";
     }
 
+    public Transaction(String bookIsbn, String borrowerId, LocalDate borrowDate) {
+        this.bookIsbn = bookIsbn;
+        this.borrowerId = borrowerId;
+        this.borrowDate = borrowDate;
+        this.returnDate = null;
+        this.status = "borrowed";
+    }
+
     // Getters and setters
     public String getBookIsbn() { return bookIsbn; }
     public String getBorrowerId() { return borrowerId; }

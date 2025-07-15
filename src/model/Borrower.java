@@ -62,7 +62,7 @@ public class Borrower {
     @Override
     public String toString() {
         return String.format(
-            "Name: %s\nID: %s\nContact: %s\nBooks: %s\nFines: %.2f\n",
+            "Name: %s\nID: %s\nContact: %s\nBooks: %s\nFines: GHS %.2f%n",
             name, idNumber, contactInfo,
             borrowedBooks.isEmpty() ? "None" : String.join(", ", borrowedBooks),
             finesOwed

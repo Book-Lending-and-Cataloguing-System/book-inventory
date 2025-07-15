@@ -3,6 +3,7 @@ import utils.*;
 import reports.*;
 import model.Book;
 import model.Borrower;
+import model.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +22,9 @@ public class Main {
 
         // ✅ Load data from file before menu starts
         inventory.loadBooks(fileHandler.loadBooks());
-        System.out.println("Books loaded from file.");
+        registry.loadBorrowers(fileHandler.loadBorrowers());
+        tracker.loadTransactions(fileHandler.loadTransactions());
+        System.out.println("Books, borrowers, and transactions loaded.");
 
         boolean running = true;
 
@@ -29,6 +32,8 @@ public class Main {
             System.out.println("\n=== EBENEZER COMMUNITY LIBRARY ===");
             System.out.println("1. Book Inventory");
             System.out.println("2. Borrower Registry");
+            System.out.println("3. Transactions");
+            System.out.println("4. Reports");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
             String input = scanner.nextLine().trim();
@@ -40,9 +45,17 @@ public class Main {
                 case "2":
                     borrowerRegistryMenu(scanner, registry);
                     break;
+                case "3":
+                    transactionMenu(scanner, tracker, inventory, registry);
+                    break;
+                case "4":
+                    reportsMenu(scanner, reporter, tracker, registry, inventory, monitor);
+                    break;
                 case "0":
                     fileHandler.saveBooks(new ArrayList<>(inventory.getAllBooks()));
-                    System.out.println("Books saved to file. Goodbye!");
+                    fileHandler.saveBorrowers(new ArrayList<>(registry.getAllBorrowers()));
+                    fileHandler.saveTransactions(tracker.getAllTransactions());
+                    System.out.println("Books, borrowers, and transactions saved to file. Goodbye!");
                     running = false;
                     break;
                 default:
@@ -263,6 +276,116 @@ public class Main {
         } else {
             for (Borrower b : borrowers) {
                 System.out.println(b);
+            }
+        }
+    }
+
+    // === Transaction Menu ===
+
+    private static void transactionMenu(Scanner scanner, LendingTracker tracker, BookInventory inventory, BorrowerRegistry registry) {
+        boolean managing = true;
+        while (managing) {
+            System.out.println("\n--- Transaction Menu ---");
+            System.out.println("1. Borrow Book");
+            System.out.println("2. Return Book");
+            System.out.println("3. List Transactions");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose option: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    borrowBook(scanner, tracker, inventory, registry);
+                    break;
+                case "2":
+                    returnBook(scanner, tracker);
+                    break;
+                case "3":
+                    tracker.listTransactions();
+                    break;
+                case "0":
+                    managing = false;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    private static void borrowBook(Scanner scanner, LendingTracker tracker, BookInventory inventory, BorrowerRegistry registry) {
+        System.out.print("Enter Book ISBN: ");
+        String isbn = scanner.nextLine().trim();
+        System.out.print("Enter Borrower ID: ");
+        String borrowerId = scanner.nextLine().trim();
+        System.out.print("Enter Borrow Date (YYYY-MM-DD): ");
+        String dateStr = scanner.nextLine().trim();
+
+        if (inventory.findBook(isbn) == null) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        if (registry.findBorrower(borrowerId) == null) {
+            System.out.println("Borrower not found.");
+            return;
+        }
+
+        try {
+            Transaction txn = new Transaction(isbn, borrowerId, java.time.LocalDate.parse(dateStr));
+            tracker.addTransaction(txn);
+            System.out.println("Book borrowed successfully.");
+        } catch (Exception e) {
+            System.out.println("Failed to borrow book: " + e.getMessage());
+        }
+    }
+
+    private static void returnBook(Scanner scanner, LendingTracker tracker) {
+        System.out.print("Enter Book ISBN: ");
+        String isbn = scanner.nextLine().trim();
+        System.out.print("Enter Borrower ID: ");
+        String borrowerId = scanner.nextLine().trim();
+        System.out.print("Enter Return Date (YYYY-MM-DD): ");
+        String returnDate = scanner.nextLine().trim();
+
+        boolean success = tracker.returnBook(isbn, borrowerId, returnDate);
+        if (success) {
+            System.out.println("Book returned successfully.");
+        } else {
+            System.out.println("Matching transaction not found.");
+        }
+    }
+    private static void reportsMenu(Scanner scanner, ReportGenerator reporter, LendingTracker tracker, BorrowerRegistry registry, BookInventory inventory, OverdueMonitor monitor) {  // 👈 New: create a monitor instance
+        boolean reporting = true;
+        while (reporting) {
+            System.out.println("\n--- Reports Menu ---");
+            System.out.println("1. Most Borrowed Books (Last 30 Days)");
+            System.out.println("2. Top Borrowers by Fines");
+            System.out.println("3. Inventory by Category");
+            System.out.println("4. Run Overdue Check and Update Fines");  // 👈 New option
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            String option = scanner.nextLine().trim();
+
+            switch (option) {
+                case "1":
+                    reporter.mostBorrowedBooks(tracker.getAllTransactions());
+                    break;
+                case "2":
+                    reporter.highestFinesOwed(registry.getAllBorrowers());
+                    break;
+                case "3":
+                    reporter.categoryDistribution(new ArrayList<>(inventory.getAllBooks()));
+                    break;
+                case "4":
+                    monitor.checkOverdue(tracker.getAllTransactions());
+                    monitor.updateFines(registry.getAllBorrowers());
+                    System.out.println("Overdue check complete. Fines updated.");
+                    break;
+                case "0":
+                    reporting = false;
+                    break;
+                default:
+                    System.out.println("Invalid input.");
             }
         }
     }

@@ -143,5 +143,15 @@ public class BookInventory {
         return allBooks;
     }
 
+    public Book findBook(String isbn) {
+        for (TreeMap<String, Book> categoryBooks : booksByCategory.values()) {
+            if (categoryBooks.containsKey(isbn)) {
+                return categoryBooks.get(isbn);
+            }
+        }
+        return null; // Book not found
+    }
+
+
 
 }
