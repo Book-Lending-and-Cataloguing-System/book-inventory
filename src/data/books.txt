@@ -1,2 +1,4 @@
 cell biology||james watson||978-2468204569||Biology||2002||bayat zamori||Shelf B2
+programming 1||bismark zebill||35454667374||Computer Science||2000||wanerbros||shelf C4
+Discrete Mathematics||steven azongo||978-2468246367||Mathematics||2024||romeo||Shelf B3
 The Java Journey||James jack||978-1234567890||Programming||2023||Pearson||Shelf A1
