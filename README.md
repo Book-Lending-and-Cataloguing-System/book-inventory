@@ -1,5 +1,6 @@
 # Ebenezer Library System
 
+### java -cp ./out Main
 A console-based Book Lending & Cataloguing System for Ebenezer Community Library, built for DCIT308 group project.
 
 ## Setup
