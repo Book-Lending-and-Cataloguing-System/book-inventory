@@ -1,4 +1,4 @@
-import datastructures.*;
+import functionality.*;
 import utils.*;
 import reports.*;
 import model.Book;
@@ -7,7 +7,7 @@ import model.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.TreeMap;
+import datastructures.TreeMap;
 
 public class Main {
     public static void main(String[] args) {

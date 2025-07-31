@@ -1,18 +1,17 @@
-package datastructures;
+package functionality;
 
 import model.Transaction;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import datastructures.Queue;
 
 public class LendingTracker {
     private Queue<Transaction> transactions;
 
     public LendingTracker() {
-        transactions = new LinkedList<>();
+        transactions = new Queue<>();
         loadTransactionsFromFile();
     }
 
@@ -22,7 +21,7 @@ public class LendingTracker {
     }
 
     public boolean returnBook(String isbn, String borrowerId, String returnDateStr) {
-        List<Transaction> tempList = new ArrayList<>();
+        Queue<Transaction> tempQueue = new Queue<>();
         boolean updated = false;
 
         LocalDate returnDate = LocalDate.parse(returnDateStr);
@@ -40,10 +39,10 @@ public class LendingTracker {
                 updated = true;
             }
 
-            tempList.add(t);
+            tempQueue.offer(t);
         }
 
-        transactions.addAll(tempList);
+        transactions.addAll(tempQueue);
         saveAllTransactions();
         return updated;
     }
@@ -55,7 +54,7 @@ public class LendingTracker {
         }
 
         System.out.println("\nLending Transactions:");
-        for (Transaction t : transactions) {
+        for (Transaction t : transactions.toArray(new Transaction[0])) {
             System.out.println(t);
         }
     }
@@ -86,7 +85,7 @@ public class LendingTracker {
 
     private void saveAllTransactions() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transactions.txt", false))) {
-            for (Transaction t : transactions) {
+            for (Transaction t : transactions.toArray(new Transaction[0])) {
                 writer.write(t.toFileString());
                 writer.newLine();
             }
@@ -95,13 +94,18 @@ public class LendingTracker {
         }
     }
 
-    // ✅ This is the method Main.java needs
     public List<Transaction> getAllTransactions() {
-        return new ArrayList<>(transactions);
-    }
-    public void loadTransactions(List<Transaction> transactionList) {
-        transactions.clear();
-        transactions.addAll(transactionList);
+        List<Transaction> list = new ArrayList<>();
+        for (Transaction t : transactions.toArray(new Transaction[0])) {
+            list.add(t);
+        }
+        return list;
     }
 
+    public void loadTransactions(List<Transaction> transactionList) {
+        transactions.clear();
+        for (Transaction t : transactionList) {
+            transactions.offer(t);
+        }
+    }
 }

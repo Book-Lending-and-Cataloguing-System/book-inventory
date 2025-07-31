@@ -1,10 +1,9 @@
-package datastructures;
-
+package functionality;
 import model.Borrower;
 import model.Transaction;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.PriorityQueue;
+import datastructures.PriorityQueue;
 
 public class OverdueMonitor {
     private PriorityQueue<Transaction> overdueBooks;
@@ -22,11 +21,8 @@ public class OverdueMonitor {
                 overdueBooks.offer(transaction);
             }
         }
-
     }
 
-
-    // TODO: Implement checkOverdue() to flag books overdue by >14 days
     public void checkOverdue(List<Transaction> transactions) {
         overdueBooks.clear();
         for (Transaction t : transactions) {
@@ -38,8 +34,6 @@ public class OverdueMonitor {
             }
         }
     }
-
-    // TODO: Implement updateFines() to calculate fines for borrowers
 
     public void updateFines(List<Borrower> borrowers) {
         while (!overdueBooks.isEmpty()) {
@@ -54,6 +48,4 @@ public class OverdueMonitor {
             }
         }
     }
-
-    // TODO: Justify use of PriorityQueue (O(log n) insertion, O(1) min retrieval)
 }
